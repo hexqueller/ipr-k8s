@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: example-cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: example-container
+            image: curlimages/curl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Hello, Kubernetes!"
+              curl -X 'GET' 'https://timeapi.io/api/time/current/zone?timeZone=Europe%2FMoscow' -H 'accept: application/json'
+              sleep 30
+          restartPolicy: OnFailure

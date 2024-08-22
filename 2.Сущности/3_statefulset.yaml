@@ -1,22 +1,21 @@
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mystatefulset
+  name: nginx-statefulset
 spec:
+  serviceName: "nginx"
+  replicas: 1
   selector:
     matchLabels:
-      app: ss-example
-  serviceName: <ServiceName>
-  replicas: 1
+      app: ss-nginx
   template:
     metadata:
       labels:
-        app: ss-example
+        app: ss-nginx
     spec:
       containers:
-      - name: ss-example
-        image: registry.k8s.io/nginx-slim:0.8
+      - name: nginx
+        image: nginx:latest
         ports:
         - containerPort: 80
           name: web
@@ -27,7 +26,43 @@ spec:
   - metadata:
       name: www
     spec:
+      storageClassName: manual
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 512Mi
+          storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statefulset
+spec:
+  type: LoadBalancer
+  selector:
+    app: ss-nginx
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: manual
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mypv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: /tmp
