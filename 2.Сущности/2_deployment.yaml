@@ -1,0 +1,37 @@
+# k port-forward svc/deployment 8080:8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-example
+spec:
+  selector:
+    matchLabels:
+      app: deployment-example
+  template:
+    metadata:
+      labels:
+        app: deployment-example
+    spec:
+      containers:
+      - name: deployment-example
+        image: nginx:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deployment
+spec:
+  type: LoadBalancer
+  selector:
+    app: deployment-example
+  ports:
+  - port: 8080
+    targetPort: 80
