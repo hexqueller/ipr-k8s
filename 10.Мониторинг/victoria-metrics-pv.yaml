@@ -5,8 +5,9 @@ metadata:
   namespace: monitoring
 spec:
   capacity:
-    storage: 2Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/data"
+  storageClassName: dynamic-sc

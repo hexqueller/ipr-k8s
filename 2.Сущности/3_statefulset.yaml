@@ -4,7 +4,7 @@ metadata:
   name: nginx-pv
 spec:
   capacity:
-    storage: 1Gi
+    storage: 512Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
