@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: obsidian-service
 spec:
-  type: LoadBalancer
   selector:
     app: obsidian-app
   ports:
@@ -30,9 +29,29 @@ spec:
         resources:
           limits:
             memory: "512Mi"
-            cpu: "500m"
+            cpu: "1"
         ports:
         - containerPort: 3000
+        volumeMounts:
+        - name: obsidian-vault
+          mountPath: /config/Obsidian Vault
+      volumes:
+      - name: obsidian-vault
+        persistentVolumeClaim:
+          claimName: obsidian-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: obsidian-pvc
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 
 ---
 apiVersion: networking.k8s.io/v1
